@@ -3,10 +3,9 @@
 # The routers are currently commented out, but they can be uncommented to enable the corresponding routes.
 
 from fastapi import FastAPI
-
-# from app.api.routes import chat, trips
+from routes import chat
 
 app = FastAPI()
 
-# app.include_router(chat.router)
-# app.include_router(trips.router)
+# Include the chat router to enable the /chat endpoint
+app.include_router(chat.router)
