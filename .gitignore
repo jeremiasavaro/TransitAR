@@ -1,0 +1,52 @@
+# Python / uv
+.venv/
+app/.venv/
+__pycache__/
+app/__pycache__/
+*.py[cod]
+*.pyd
+*.so
+.python-version
+app/.python-version
+.pytest_cache/
+app/.pytest_cache/
+.mypy_cache/
+app/.mypy_cache/
+.ruff_cache/
+app/.ruff_cache/
+.coverage
+htmlcov/
+dist/
+build/
+site/
+.eggs/
+*.egg-info/
+
+# Environment files
+.env
+.env.*
+app/.env
+app/.env.*
+
+# Logs
+*.log
+app/*.log
+
+# OS / editor
+.DS_Store
+
+# Frontend build artifacts
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+build/
+frontend/build/
+.next/
+frontend/.next/
+.nuxt/
+frontend/.nuxt/
+.vite/
+frontend/.vite/
+coverage/
+frontend/coverage/
