@@ -1,5 +1,5 @@
 app/
-├── endpoints/      # FastAPI
+├── routes/      # FastAPI
 ├── services/       # Toda la lógica del negocio
 │   ├── transport/
 │   ├── mcp/
