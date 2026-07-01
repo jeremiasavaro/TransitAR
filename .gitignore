@@ -1,6 +1,9 @@
 #Huevadas
 .dev/
 
+#Db
+*.db
+
 # Python / uv
 .venv/
 app/.venv/

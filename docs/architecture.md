@@ -9,7 +9,7 @@ app/
 │   └── geocoding/
 ├── repositories/   # Acceso a datos
 ├── models/         # ORM, aca viven las entidades de SQLAlchemy
-├── schemas/        # Pydantic
+├── schemas/        # Pydantic (data validation)
 ├── jobs/           # Procesos asíncronos
 ├── config/         # Configuración
 ├── utils/          # Utilidades compartidas
