@@ -20,3 +20,6 @@ def create_chat_message(db: Session, message: str) -> ChatRead:
     db.refresh(chat_history)
     # Convert the ORM object into the public response schema.
     return ChatRead.model_validate(chat_history)
+
+def list_chat_messages(db: Session) -> list[ChatHistory]:
+    return db.query(ChatHistory).order_by(ChatHistory.created_at).all()
