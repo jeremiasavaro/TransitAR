@@ -4,6 +4,9 @@
 #Db
 *.db
 
+# generated test outputs of research scripts
+research/**/*.csv
+
 # Python / uv
 .venv/
 app/.venv/
