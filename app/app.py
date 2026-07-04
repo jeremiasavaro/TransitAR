@@ -1,11 +1,14 @@
-# This file is the main entry point for the FastAPI application.
-# It creates an instance of the FastAPI class and includes the routers for different API endpoints.
-# The routers are currently commented out, but they can be uncommented to enable the corresponding routes.
-
 from fastapi import FastAPI
+from infrastructure.database.session import init_db
 from routes import chat
 
 app = FastAPI()
 
-# Include the chat router to enable the /chat endpoint
+# Keep route registration in one place so new endpoints are added here.
 app.include_router(chat.router)
+
+
+@app.on_event("startup")
+def startup() -> None:
+    # Create tables on startup for the minimal local setup.
+    init_db()
