@@ -1,8 +1,7 @@
 from fastapi import FastAPI
-
-from routes.user import login, register
 from infrastructure.database.session import init_db
 from routes import chat
+from routes.user import login, register
 
 app = FastAPI()
 
