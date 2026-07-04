@@ -1,12 +1,16 @@
 from datetime import datetime
 
+from config.settings import settings
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class UserRegister(BaseModel):
     # Input schema for register.
     email: str = Field(min_length=3, max_length=255)
-    password: str = Field(min_length=6, max_length=72)
+    password: str = Field(
+        min_length=settings.password_min_length,
+        max_length=settings.password_max_length,
+    )
 
     @field_validator("email")
     @classmethod
@@ -21,7 +25,10 @@ class UserRegister(BaseModel):
 class UserLogin(BaseModel):
     # Input schema for login.
     email: str = Field(min_length=3, max_length=255)
-    password: str = Field(min_length=1, max_length=72)
+    password: str = Field(
+        min_length=settings.password_min_length,
+        max_length=settings.password_max_length,
+    )
 
     @field_validator("email")
     @classmethod
