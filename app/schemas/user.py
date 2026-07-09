@@ -49,3 +49,34 @@ class TokenRead(BaseModel):
     # Response schema returned by login.
     access_token: str
     token_type: str = "bearer"
+
+
+class LogoutRead(BaseModel):
+    message: str
+
+
+class PasswordResetRequest(BaseModel):
+    email: str = Field(min_length=3, max_length=255)
+
+    @field_validator("email")
+    @classmethod
+    def normalize_email(cls, value: str) -> str:
+        return value.strip().lower()
+
+
+class PasswordResetRequestRead(BaseModel):
+    # In a real app this token should be sent by email.
+    reset_token: str | None = None
+    message: str
+
+
+class PasswordResetConfirm(BaseModel):
+    reset_token: str
+    new_password: str = Field(
+        min_length=settings.password_min_length,
+        max_length=settings.password_max_length,
+    )
+
+
+class PasswordResetConfirmRead(BaseModel):
+    message: str
