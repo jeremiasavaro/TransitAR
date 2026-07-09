@@ -33,30 +33,81 @@ def verify_password(password: str, stored_hash: str) -> bool:
     return compare_digest(derived.hex(), expected_hash)
 
 
-# The create_access_token function is used to generate a JWT access token for a user. It takes the user's email (subject) and optional extra claims as input. The function creates a payload containing the subject, issued-at time, and expiration time based on the configured access token expiration duration. It then encodes the payload into a JWT using the secret key and algorithm specified in the settings, returning the generated access token as a string.
-def create_access_token(
-    subject: str, extra_claims: dict[str, Any] | None = None
+# Generic token creation function
+def _create_token(
+    subject: str,
+    token_type: str,
+    expires_minutes: int,
+    extra_claims: dict[str, Any] | None = None,
 ) -> str:
     now = datetime.now(timezone.utc)
-    # The payload must include the subject (the user email) and the issued-at and expiration times.
+    jti = token_hex(16)  # Generate a unique identifier for the token (JTI)
+    # Create the payload with standard claims and any extra claims provided
     payload: dict[str, Any] = {
         "sub": subject,
-        "iat": int(now.timestamp()),  # issued at
-        "exp": int(  # expiration time
-            (now + timedelta(minutes=settings.access_token_expire_minutes)).timestamp()
-        ),
+        "jti": jti,  # Unique identifier for the tokenS
+        "iss": settings.jwt_issuer,  # Issuer claim
+        "aud": settings.jwt_audience,  # Audience claim
+        "typ": token_type,  # Token type claim
+        "iat": int(now.timestamp()),  # Issued At
+        "nbf": int(now.timestamp()),  # Not Before
+        "exp": int(
+            (now + timedelta(minutes=expires_minutes)).timestamp()
+        ),  # Expiration
     }
     if extra_claims:
         payload.update(extra_claims)
 
-    # Encode the payload into a JWT using the secret key and algorithm from settings.
     return jwt.encode(
         payload, settings.jwt_secret_key, algorithm=settings.jwt_algorithm
     )
 
 
-# The decode_access_token function is used to decode a JWT access token and verify its signature and claims. It uses the secret key and algorithm specified in the settings to perform the decoding. If the token is valid, it returns the decoded payload as a dictionary. If the token is invalid or expired, it raises an exception.
-def decode_access_token(token: str) -> dict[str, Any]:
-    return jwt.decode(
-        token, settings.jwt_secret_key, algorithms=[settings.jwt_algorithm]
+# Generic token decoding function
+def _decode_token(token: str, expected_type: str) -> dict[str, Any]:
+    payload = jwt.decode(
+        token,
+        settings.jwt_secret_key,
+        algorithms=[settings.jwt_algorithm],
+        issuer=settings.jwt_issuer,
+        audience=settings.jwt_audience,
+        options={
+            "require": ["sub", "jti", "iss", "aud", "typ", "iat", "nbf", "exp"],
+        },
     )
+
+    if payload.get("typ") != expected_type:
+        raise jwt.InvalidTokenError("invalid token type")
+
+    return payload
+
+
+# Create token for user access
+def create_access_token(
+    subject: str, extra_claims: dict[str, Any] | None = None
+) -> str:
+    return _create_token(
+        subject=subject,
+        token_type="access",
+        expires_minutes=settings.access_token_expire_minutes,
+        extra_claims=extra_claims,
+    )
+
+
+# Create token for password reset
+def create_reset_token(subject: str) -> str:
+    return _create_token(
+        subject=subject,
+        token_type="reset_password",
+        expires_minutes=settings.reset_token_expire_minutes,
+    )
+
+
+# Decode access token function
+def decode_access_token(token: str) -> dict[str, Any]:
+    return _decode_token(token, expected_type="access")
+
+
+# Decode reset token function
+def decode_reset_token(token: str) -> dict[str, Any]:
+    return _decode_token(token, expected_type="reset_password")
