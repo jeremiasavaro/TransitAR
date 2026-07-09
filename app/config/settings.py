@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     password_hash_algorithm: str
     jwt_secret_key: str
     jwt_algorithm: str
-    access_token_expire_minutes: int = 30
+    access_token_expire_minutes: int = 120
 
 
 settings = Settings()

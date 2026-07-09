@@ -1,9 +1,9 @@
 from fastapi import HTTPException, status
 from models.user import User
-from schemas.user import UserRead
+from schemas.user import TokenRead, UserRead
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-from utils.security import hash_password, verify_password
+from utils.security import create_access_token, hash_password, verify_password
 
 
 def register_user(db: Session, email: str, password: str) -> UserRead:
@@ -21,12 +21,18 @@ def register_user(db: Session, email: str, password: str) -> UserRead:
     return UserRead.model_validate(user)
 
 
-def authenticate_user(db: Session, email: str, password: str) -> UserRead:
-    # Login only checks the credentials and returns the public user record.
-    user = db.scalar(select(User).where(User.email == email))
+def get_user_by_email(db: Session, email: str) -> User | None:
+    return db.scalar(select(User).where(User.email == email))
+
+
+def authenticate_user_and_create_token(
+    db: Session, email: str, password: str
+) -> TokenRead:
+    user = get_user_by_email(db, email)
     if user is None or not verify_password(password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="invalid credentials"
         )
 
-    return UserRead.model_validate(user)
+    token = create_access_token(subject=user.email, extra_claims={"user_id": user.id})
+    return TokenRead(access_token=token)
