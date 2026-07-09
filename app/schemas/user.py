@@ -5,7 +5,10 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class UserRegister(BaseModel):
-    # Input schema for register.
+    """
+    Input schema for user registration.
+    """
+
     email: str = Field(min_length=3, max_length=255)
     password: str = Field(
         min_length=settings.password_min_length,
@@ -23,7 +26,10 @@ class UserRegister(BaseModel):
 
 
 class UserLogin(BaseModel):
-    # Input schema for login.
+    """
+    Input schema for login.
+    """
+
     email: str = Field(min_length=3, max_length=255)
     password: str = Field(
         min_length=settings.password_min_length,
@@ -37,7 +43,10 @@ class UserLogin(BaseModel):
 
 
 class UserRead(BaseModel):
-    # Public response schema. Notice that the password hash is not exposed.
+    """
+    Public response schema. Notice that the password hash is not exposed.
+    """
+
     model_config = ConfigDict(from_attributes=True)
 
     id: int
@@ -46,16 +55,27 @@ class UserRead(BaseModel):
 
 
 class TokenRead(BaseModel):
-    # Response schema returned by login.
+    """
+    Response schema returned by login.
+    """
+
     access_token: str
     token_type: str = "bearer"
 
 
 class LogoutRead(BaseModel):
+    """
+    Response schema for logout.
+    """
+
     message: str
 
 
 class PasswordResetRequest(BaseModel):
+    """
+    Input schema for password reset request.
+    """
+
     email: str = Field(min_length=3, max_length=255)
 
     @field_validator("email")
@@ -65,12 +85,20 @@ class PasswordResetRequest(BaseModel):
 
 
 class PasswordResetRequestRead(BaseModel):
-    # In a real app this token should be sent by email.
+    """
+    Response schema for password reset request.
+    TODO: In prod this token should be sent by email.
+    """
+
     reset_token: str | None = None
     message: str
 
 
 class PasswordResetConfirm(BaseModel):
+    """
+    Input schema for password reset confirmation.
+    """
+
     reset_token: str
     new_password: str = Field(
         min_length=settings.password_min_length,
@@ -79,4 +107,8 @@ class PasswordResetConfirm(BaseModel):
 
 
 class PasswordResetConfirmRead(BaseModel):
+    """
+    Response schema for password reset confirmation.
+    """
+
     message: str
