@@ -12,11 +12,14 @@ class Settings(BaseSettings):
     password_max_length: int = 72
     password_hash_iterations: int = 100_000
     password_salt_bytes: int = 16
+    access_token_expire_minutes: int = 120
+    reset_token_expire_minutes: int = 30
     database_url: str
     password_hash_algorithm: str
     jwt_secret_key: str
     jwt_algorithm: str
-    access_token_expire_minutes: int = 120
+    jwt_issuer: str
+    jwt_audience: str
 
 
 settings = Settings()
