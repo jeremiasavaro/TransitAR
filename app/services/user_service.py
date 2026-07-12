@@ -30,9 +30,15 @@ def register_user(db: Session, email: str, password: str) -> UserRead:
         )
 
     user = User(email=email, password_hash=hash_password(password))
-    db.add(user)
-    db.commit()
-    db.refresh(user)
+    try:
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+    except Exception:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="email already registered"
+        )
     return UserRead.model_validate(user)
 
 
@@ -100,7 +106,7 @@ def confirm_password_reset(
     except PyJWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="invalid reset token"
-        )
+        ) from None
 
     jti = payload.get("jti")
     if not jti:
@@ -119,7 +125,7 @@ def confirm_password_reset(
     except (TypeError, ValueError):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="invalid reset token"
-        )
+        ) from None
 
     user = get_user_by_id(db, user_id)
     if user is None:
