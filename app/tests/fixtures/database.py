@@ -9,7 +9,6 @@ test_engine = create_engine(
     connect_args={"check_same_thread": False},
     poolclass=StaticPool,
 )
-Base.metadata.create_all(bind=test_engine)
 TestSession = sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
 
 
