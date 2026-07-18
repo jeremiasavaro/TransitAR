@@ -17,3 +17,10 @@ jobs:
       - name: Run tests
         run: uv run pytest tests/ -v
         working-directory: app
+        env:
+          DATABASE_URL: "sqlite:///./transitar.db"
+          PASSWORD_HASH_ALGORITHM: sha256
+          JWT_SECRET_KEY: ci-test-secret
+          JWT_ALGORITHM: HS256
+          JWT_ISSUER: transitar-api
+          JWT_AUDIENCE: transitar-client
